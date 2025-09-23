@@ -41,26 +41,42 @@ def pairwise_judgment(question, baseline, answer, reference, configs, settings):
     if reference:
         prompt_args[f"REFERENCE"] = reference["messages"][-1]["content"]['answer']
         
-    if "user_template" in configs:
-        user_prompt = configs["user_template"].format(**prompt_args)
-        messages = [
-            {
-                "role": "user", 
-                "content": user_prompt,
-            }
-        ]
     if "prompt_template" in configs:
         user_prompt = configs["prompt_template"].format(**prompt_args)
         messages = [
             {
-                "role": "system", 
+                "role": "system",
                 "content": JUDGE_SETTINGS[question["category"]]["system_prompt"],
             },
             {
-                "role": "user", 
+                "role": "user",
+                "content": user_prompt,
+            },
+        ]
+    elif "system_prompt" in configs and "user_template" in configs:
+        user_prompt = configs["user_template"].format(**prompt_args)
+        messages = [
+            {
+                "role": "system",
+                "content": configs["system_prompt"],
+            },
+            {
+                "role": "user",
+                "content": user_prompt,
+            },
+        ]
+    elif "user_template" in configs:
+        user_prompt = configs["user_template"].format(**prompt_args)
+        messages = [
+            {
+                "role": "user",
                 "content": user_prompt,
             }
         ]
+    else:
+        # 如果没有提供任何模板，则 messages 将未定义
+        # 根据你的需求，可以抛出异常或设置一个默认值
+        raise ValueError("No valid prompt template found in configs.")
 
     # build arguments for api completions
     kwargs = settings | {
