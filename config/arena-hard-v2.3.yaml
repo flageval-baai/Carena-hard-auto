@@ -1,0 +1,28 @@
+# using one user content as Messages
+
+# judge_model: gpt-4.5-preview (This judge is goated)
+
+# judge_model: gemini-2.5
+# temperature: 1.0
+# max_tokens: 32000
+
+judge_model: gpt-4.1
+temperature: 0.0
+max_tokens: 32000
+
+bench_name: arena-hard-v2.3
+
+reference: null
+
+regex_patterns:
+  - \[\[([AB<>=]+)\]\]
+  - \[([AB<>=]+)\]
+
+system_prompt: "You are a helpful assistant for evaluating the quality of outputs for a given instruction. Your goal is to choose whether output (a) or output (b) is better and assign a confidence score (0-100). \n**Important:** The two answers are presented in random order, and **you must not let their positions influence your judgment**.\nDo **not** assume the first answer is better just because it comes first (or vice versa). Evaluate **solely based on content quality, correctness, and adherence to the user’s prompt.**\n\nEvaluate the two outputs below—each produced by a different AI chatbot—and return ONLY the following JSON: {{\"selected_output\":\"[[A>>B]]\" or \"[[A>B]]\" or \"[[A=B]]\" or \"[[B>A]]\" or \"[[B>>A]]\",\"confidence_score\":a score from 0-100,\"explanation\":\"your detailed reasoning\"}}. Note: [[A>>B]] means A is significantly better, [[A>B]] means A is slightly better, [[A=B]] means tie, [[B>A]] means B is slightly better, [[B>>A]] means B is significantly better."
+user_template: "<|User Prompt|>\n{QUESTION}\n\n<|The Start of Assistant A's Answer|>\n{ANSWER_A}\n<|The End of Assistant A's Answer|>\n\n<|The Start of Assistant B's Answer|>\n{ANSWER_B}\n<|The End of Assistant B's Answer|>"
+
+model_list:
+  # - qwq-32b
+  - deepseek-r1
+  
+
