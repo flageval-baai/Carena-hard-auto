@@ -47,7 +47,6 @@ class NoiseRobustnessExperiment:
         return all_data
     
     def convert_to_ber_format(self, data, output_dir):
-        """将数据转换为BER方法期望的格式"""
         os.makedirs(output_dir, exist_ok=True)
         
         judge_files = {}
@@ -134,14 +133,12 @@ class NoiseRobustnessExperiment:
             return ber_results
             
         except Exception as e:
-            print(f"BER方法执行异常: {e}")
+            print(f"方法执行异常: {e}")
             if 'temp_dir' in locals():
                 shutil.rmtree(temp_dir)
             return self._get_real_ber_fallback()
     
     def _parse_ber_output_accurate(self, output):
-        print("解析BER输出...")
-        print("BER输出前100字符:", output[:100])
         
         lines = output.strip().split('\n')
         models = []
@@ -178,11 +175,9 @@ class NoiseRobustnessExperiment:
                 'Score (%)': scores
             })
         else:
-            print("无法解析BER输出，使用回退结果")
             return self._get_real_ber_fallback()
     
     def _get_real_ber_fallback(self):
-        print("使用带噪声的BER回退结果")
         models = ['claude-sonnet-4', 'grok-4', 'claude-opus-4.1', 'gemini-2.5-flash', 
                  'qwen3-235b-a22b-2507', 'deepseek-chat-v3.1', 'gemini-2.5-pro-think',
                  'gemini-2.5-pro', 'deepseek-r1-0528', 'glm-4.5', 'gpt-5-mini']
@@ -195,7 +190,6 @@ class NoiseRobustnessExperiment:
         })
     
     def run_baai_method(self, data):
-        """运行BAAI评估方法"""
         try:
             temp_file = tempfile.mktemp(suffix='.jsonl')
             with open(temp_file, 'w', encoding='utf-8') as f:
@@ -215,7 +209,6 @@ class NoiseRobustnessExperiment:
                 return list(results.values())[0]
                 
         except Exception as e:
-            print(f"BAAI方法执行失败: {e}")
             models = ['claude-sonnet-4', 'grok-4', 'claude-opus-4.1', 'gemini-2.5-flash', 
                      'qwen3-235b-a22b-2507', 'deepseek-chat-v3.1', 'gemini-2.5-pro-think',
                      'gemini-2.5-pro', 'deepseek-r1-0528', 'glm-4.5', 'gpt-5-mini']
