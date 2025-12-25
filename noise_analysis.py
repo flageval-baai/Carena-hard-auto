@@ -189,14 +189,14 @@ class NoiseRobustnessExperiment:
             'Score (%)': noisy_scores
         })
     
-    def run_baai_method(self, data):
+    def run_Bayes-BT_method(self, data):
         try:
             temp_file = tempfile.mktemp(suffix='.jsonl')
             with open(temp_file, 'w', encoding='utf-8') as f:
                 for item in data:
                     f.write(json.dumps(item, ensure_ascii=False) + '\n')
             
-            from show_result_baai_oct21 import ImprovedModelEvaluator
+            from show_result_Bayes-BT_oct21 import ImprovedModelEvaluator
             
             evaluator = ImprovedModelEvaluator()
             results = evaluator.run_comprehensive_analysis([temp_file], n_bootstrap=200)  # 减少bootstrap次数加快速度
@@ -263,18 +263,18 @@ class NoiseRobustnessExperiment:
     def run_fast_test(self, clean_data):
     
         ber_clean = self.run_ber_method(clean_data[:100])
-        baai_clean = self.run_baai_method(clean_data[:100])
+        Bayes-BT_clean = self.run_Bayes-BT_method(clean_data[:100])
        
 
         noisy_data = self.inject_noise(clean_data[:100], 0.3)
         ber_noisy = self.run_ber_method(noisy_data)
-        baai_noisy = self.run_baai_method(noisy_data)
+        Bayes-BT_noisy = self.run_Bayes-BT_method(noisy_data)
     
         metrics = self.calculate_metrics(ber_clean, ber_noisy)
         print(f"BER指标: {metrics}")
         
-        metrics = self.calculate_metrics(baai_clean, baai_noisy)
-        print(f"BAAI指标: {metrics}")
+        metrics = self.calculate_metrics(Bayes-BT_clean, Bayes-BT_noisy)
+        print(f"Bayes-BT指标: {metrics}")
     
     def run_experiment(self, clean_data_paths, noise_levels=[0.1, 0.3, 0.5], n_trials=3):
 
@@ -288,35 +288,35 @@ class NoiseRobustnessExperiment:
         
         print("\n=== 获取清洁基准结果 ===")
         clean_ber = self.run_ber_method(clean_data)
-        clean_baai = self.run_baai_method(clean_data)
+        clean_Bayes-BT = self.run_Bayes-BT_method(clean_data)
         
         print("清洁BER结果:")
         print(clean_ber)
-        print("\n清洁BAAI结果:")
-        print(clean_baai)
+        print("\n清洁Bayes-BT结果:")
+        print(clean_Bayes-BT)
         
         self.results['clean'] = {
             'ber': clean_ber,
-            'baai': clean_baai
+            'Bayes-BT': clean_Bayes-BT
         }
         
         for noise_level in noise_levels:
             print(f"\n=== 测试噪声水平: {noise_level*100}% ===")
-            self.results[noise_level] = {'ber': [], 'baai': []}
+            self.results[noise_level] = {'ber': [], 'Bayes-BT': []}
             
             for trial in tqdm(range(n_trials), desc=f"噪声 {noise_level*100}%"):
                 noisy_data = self.inject_noise(clean_data, noise_level)
                 
                 ber_results = self.run_ber_method(noisy_data)
-                baai_results = self.run_baai_method(noisy_data)
+                Bayes-BT_results = self.run_Bayes-BT_method(noisy_data)
                 
                 ber_metrics = self.calculate_metrics(clean_ber, ber_results)
-                baai_metrics = self.calculate_metrics(clean_baai, baai_results)
+                Bayes-BT_metrics = self.calculate_metrics(clean_Bayes-BT, Bayes-BT_results)
                 
                 self.results[noise_level]['ber'].append(ber_metrics)
-                self.results[noise_level]['baai'].append(baai_metrics)
+                self.results[noise_level]['Bayes-BT'].append(Bayes-BT_metrics)
                 
-                print(f"试验 {trial+1}: BER={ber_metrics}, BAAI={baai_metrics}")
+                print(f"试验 {trial+1}: BER={ber_metrics}, Bayes-BT={Bayes-BT_metrics}")
         
         self.save_results_to_csv()
         return self.results
@@ -326,7 +326,7 @@ class NoiseRobustnessExperiment:
         noise_levels = sorted([k for k in self.results.keys() if isinstance(k, float)])
         
         for noise in noise_levels:
-            for method in ['ber', 'baai']:
+            for method in ['ber', 'Bayes-BT']:
                 metrics_list = self.results[noise][method]
                 for metric in ['kendall_tau', 'top_k_retention', 'mean_score_deviation']:
                     values = [m.get(metric, 0) for m in metrics_list]
