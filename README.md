@@ -1,5 +1,5 @@
-````markdown
-# Carena-Hard-Auto: Automatic Benchmark Construction and Bayesian Ranking
+
+## Carena-Hard-Auto: Automatic Benchmark Construction and Bayesian Ranking
 
 This repository contains the **full evaluation pipeline** used in our paper, including:
 
